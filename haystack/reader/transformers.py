@@ -16,7 +16,7 @@ class TransformersReader(BaseReader):
 
     def __init__(
         self,
-        model_name_or_path: str = "distilbert-base-uncased-distilled-squad",
+        model_name_or_path,
         tokenizer: Optional[str] = None,
         context_window_size: int = 70,
         use_gpu: int = 0,
@@ -53,7 +53,7 @@ class TransformersReader(BaseReader):
         :param doc_stride: length of striding window for splitting long texts (used if len(text) > max_seq_len)
 
         """
-        self.model = pipeline('question-answering', model=model_name_or_path, tokenizer=tokenizer, device=use_gpu)
+        self.model = model_name_or_path
         self.context_window_size = context_window_size
         self.top_k_per_candidate = top_k_per_candidate
         self.return_no_answers = return_no_answers
@@ -102,6 +102,7 @@ class TransformersReader(BaseReader):
                                      handle_impossible_answer=self.return_no_answers,
                                      max_seq_len=self.max_seq_len,
                                      doc_stride=self.doc_stride)
+            predictions = self.model.get_predictions(query, doc.text)
             # for single preds (e.g. via top_k=1) transformers returns a dict instead of a list
             if type(predictions) == dict:
                 predictions = [predictions]
