@@ -97,11 +97,6 @@ class TransformersReader(BaseReader):
         best_overall_score = 0
         for doc in documents:
             transformers_query = {"context": doc.text, "question": query}
-            predictions = self.model(transformers_query,
-                                     topk=self.top_k_per_candidate,
-                                     handle_impossible_answer=self.return_no_answers,
-                                     max_seq_len=self.max_seq_len,
-                                     doc_stride=self.doc_stride)
             predictions = self.model.get_predictions(query, doc.text)
             # for single preds (e.g. via top_k=1) transformers returns a dict instead of a list
             if type(predictions) == dict:
